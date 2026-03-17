@@ -1,4 +1,9 @@
-# Let the Agent Search: How Iterative Retrieval and Structured Reasoning Transform Knowledge-Intensive QA
+---
+layout: post
+title: "Let the Agent Search: How Iterative Retrieval and Structured Reasoning Transform Knowledge-Intensive QA"
+date: 2025-03-17
+author: Zhenxing Zhang
+---
 
 ## Abstract
 
