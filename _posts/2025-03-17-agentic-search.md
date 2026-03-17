@@ -23,31 +23,7 @@ The diagram below illustrates the core difference between the two paradigms:
 
 Traditional (native) RAG follows a linear pipeline: query, retrieve, augment, generate. Agentic RAG replaces this with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
 
-## The OPAL Framework
-
-OPAL is a general-purpose agentic learning system designed for research on LLM agents with tool use and multi-step reasoning. Rather than being tied to a specific model or task, OPAL provides composable abstractions that let researchers rapidly iterate on agent configurations.
-
-The framework follows a three-layer architecture:
-
-```
-┌──────────────────────────────────────────────────────┐
-│                   Orchestration                       │
-│   SessionRunner  ·  SessionLogger  ·  SessionConfig   │
-├──────────────────────────────────────────────────────┤
-│                    Environment                        │
-│      Tools  ·  Step Tracking  ·  Trajectory State     │
-├──────────────────────────────────────────────────────┤
-│                     Agentic                           │
-│   LLM Models (OpenAI, Anthropic)  ·  Agent Registry   │
-│   DefaultAgent  ·  ReActAgent  ·  Prompt Templates    │
-└──────────────────────────────────────────────────────┘
-```
-
-- **Agentic layer**: Abstracts LLM providers and agent implementations. An `AGENT_REGISTRY` maps names (`"default"`, `"react"`) to agent classes and their associated prompts, making it trivial to swap agent types.
-- **Environment layer**: Manages tools (e.g., `search_pdf`, `calculator`), tracks per-step state, and records full execution trajectories for analysis.
-- **Orchestration layer**: The `SessionRunner` coordinates agent execution asynchronously, while `SessionLogger` handles structured logging of every LLM call and tool invocation.
-
-This separation means we can change one variable at a time -- swap a prompt, add a tool, switch the agent type, or upgrade the model -- while keeping everything else constant. Every experiment in this blog was produced by changing a single YAML configuration file.
+We built a modular agent framework (OPAL) that lets us swap one variable at a time -- prompt, agent type, retrieval model -- while keeping everything else constant. Every experiment below was produced by changing a single YAML configuration file.
 
 ## Experiments on FinanceBench
 
