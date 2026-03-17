@@ -7,7 +7,7 @@ author: Zhenxing Zhang
 
 ## Abstract
 
-Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But standard RAG treats retrieval as a one-shot, passive step -- the model gets one chance to fetch documents before generating an answer. For complex financial questions that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, this single-pass design falls short. Agentic RAG replaces this linear pipeline (query, retrieve, augment, generate) with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
+Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But standard RAG treats retrieval as a one-shot, passive step -- the model gets one chance to fetch documents before generating an answer. For knowledge-intensive QA tasks that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, this single-pass design falls short. Agentic RAG replaces this linear pipeline (query, retrieve, augment, generate) with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
 
 <p align="center">
   <img src="/assets/images/agentic_rag.jpeg" alt="Native RAG vs Agentic RAG" width="500">
@@ -18,7 +18,7 @@ In this work, we investigate **agentic RAG** -- a paradigm where the LLM activel
 Our experiments reveal three key findings:
 
 1. **Agentic RAG substantially outperforms traditional RAG**, adding +2.7pp from making retrieval agentic alone, and +27.3pp when combined with structured reasoning -- reaching 64% where single-pass RAG plateaus at 37%.
-2. **ReAct-style structured reasoning is the highest-leverage intervention**, contributing over half of total improvement through better document comprehension, iterative query refinement, and task decomposition.
+2. **Even in agentic systems, prompt engineering remains the biggest lever**, contributing over half of total improvement through better document comprehension, iterative query refinement, and task decomposition.
 3. **Stronger models amplify agentic gains** -- GPT-5 improves +12pp over GPT-4o with the same pipeline, achieving 80% accuracy through qualitatively better reasoning rather than brute-force search.
 
 All experiments were conducted using [OPAL](https://github.com/Zhenxingzhang/opal) (Open Platform for Agentic Learning), our open-source framework for building and evaluating LLM agents with multi-step reasoning and tool use.
@@ -37,30 +37,18 @@ We ran 12 GPT-4o configurations and 3 GPT-5 configurations. The table below show
 
 | # | Configuration | Model | Correct | Incorrect | No Answer |
 |---|--------------|-------|---------|-----------|-----------|
-| 0 | Closed-book (no tools) | GPT-4o | 28.67% | 32.67% | 38.67% |
-| 1 | Naive search, single-turn (traditional RAG) | GPT-4o | 36.67% | 21.33% | 42.00% |
+| 0 | Closed-book (no retrieval) | GPT-4o | 28.67% | 32.67% | 38.67% |
+| 1 | Single-pass RAG (traditional) | GPT-4o | 36.67% | 21.33% | 42.00% |
 | 2 | Agentic RAG, basic prompt | GPT-4o | 39.33% | 20.00% | 40.67% |
 | 3 | + ReAct prompt | GPT-4o | 45.33% | 21.33% | 33.33% |
-| 4 | + Advanced search guidance | GPT-4o | 49.33% | 23.33% | 27.33% |
+| 4 | + Search guidance | GPT-4o | 49.33% | 23.33% | 27.33% |
 | 5 | + Advanced ReAct prompt | GPT-4o | 64.00% | 20.00% | 16.00% |
-| 6 | + BGE-large retrieval | GPT-4o | 65.33% | 18.67% | 16.00% |
-| 7 | + BGE-large + calculator | GPT-4o | 66.00% | 21.33% | 12.67% |
+| 6 | + BGE-large embeddings | GPT-4o | 65.33% | 18.67% | 16.00% |
+| 7 | + Calculator tool | GPT-4o | 66.00% | 21.33% | 12.67% |
 | 8 | + Reranker | GPT-4o | 66.67% | 24.67% | 8.67% |
-| 9 | ReAct agent + BGE-large + calc | GPT-4o | 70.00% | 18.00% | 12.00% |
-| 10 | Same as #8, GPT-5 | GPT-5 | 78.67% | 18.67% | 2.67% |
-| 11 | ReAct agent + reranker, GPT-5 | GPT-5 | **80.00%** | 16.67% | 3.33% |
-
-```
-Closed-book (GPT-4o)                    ████████████████ 28.7%
-Traditional RAG (GPT-4o)                ████████████████████ 36.7%
-+ Agentic RAG                           ██████████████████████ 39.3%
-+ ReAct prompt                          █████████████████████████ 45.3%
-+ Advanced ReAct prompt                 ███████████████████████████████████ 64.0%
-+ Retrieval upgrades                    █████████████████████████████████████ 66.7%
-+ ReAct agent (GPT-4o best)            ████████████████████████████████████████ 70.0%
-+ GPT-5 (default agent)                ████████████████████████████████████████████ 78.7%
-+ GPT-5 ReAct agent (best overall)     █████████████████████████████████████████████ 80.0%
-```
+| 9 | ReAct agent + BGE-large + calculator | GPT-4o | 70.00% | 18.00% | 12.00% |
+| 10 | Default agent + reranker | GPT-5 | 78.67% | 18.67% | 2.67% |
+| 11 | ReAct agent + reranker | GPT-5 | **80.00%** | 16.67% | 3.33% |
 
 ### What drove the improvement?
 
@@ -85,7 +73,7 @@ Why does traditional RAG plateau? It creates two failure modes: (1) the initial 
 
 The key insight is that retrieval and reasoning are not sequential stages but an interleaved loop. The agent reads initial results, identifies gaps, formulates targeted follow-up queries, and synthesizes across multiple retrievals. This loop is especially valuable for financial questions that span multiple sections of a filing (e.g., computing ratios from figures on different pages).
 
-### Finding 2: ReAct prompts are the highest-leverage intervention
+### Finding 2: Even in agentic systems, prompt engineering remains the biggest lever
 
 The most striking result is the **super-additive interaction** between ReAct-style reasoning and search guidance. Each alone produces modest gains, but together they account for +24.7pp -- more than half the total improvement.
 
