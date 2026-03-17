@@ -7,7 +7,7 @@ author: Zhenxing Zhang
 
 ## Abstract
 
-Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But standard RAG treats retrieval as a one-shot, passive step -- the model gets one chance to fetch documents before generating an answer. For knowledge-intensive QA tasks that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, this single-pass design falls short. Agentic RAG replaces this linear pipeline (query, retrieve, augment, generate) with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
+Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But traditional RAG is inherently static: it retrieves once and generates once, with no ability to refine queries, reason over results, or adapt when the first retrieval falls short. For knowledge-intensive QA tasks that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, these limitations are severe. Agentic RAG replaces this linear pipeline (query, retrieve, augment, generate) with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
 
 <p align="center">
   <img src="/assets/images/agentic_rag.jpeg" alt="Native RAG vs Agentic RAG" width="500">
@@ -18,7 +18,7 @@ In this work, we investigate **agentic RAG** -- a paradigm where the LLM activel
 Our experiments reveal three key findings:
 
 1. **Agentic RAG substantially outperforms traditional RAG**, adding +2.7pp from making retrieval agentic alone, and +27.3pp when combined with structured reasoning -- reaching 64% where single-pass RAG plateaus at 37%.
-2. **Even in agentic systems, prompt engineering remains the biggest lever**, contributing over half of total improvement through better document comprehension, iterative query refinement, and task decomposition.
+2. **Prompt engineering drives the largest gains**, contributing over half of total improvement through better document comprehension, iterative query refinement, and task decomposition.
 3. **Stronger models amplify agentic gains** -- GPT-5 improves +12pp over GPT-4o with the same pipeline, achieving 80% accuracy through qualitatively better reasoning rather than brute-force search.
 
 All experiments were conducted using [OPAL](https://github.com/Zhenxingzhang/opal) (Open Platform for Agentic Learning), our open-source framework for building and evaluating LLM agents with multi-step reasoning and tool use.
@@ -69,11 +69,11 @@ Prompt engineering and agent architecture account for the bulk of improvement. I
 
 Traditional RAG -- a single retrieval pass before generation -- already improves over closed-book answering (28.67% -> 36.67%, +8pp). But its gains plateau quickly. Making retrieval agentic -- giving the model a `search_pdf` tool it can call on demand -- adds another +2.7pp (36.67% -> 39.33%) even with a basic prompt. The real payoff comes when agentic RAG is combined with structured reasoning: the full agentic pipeline reaches 64.00% with GPT-4o, a +27.3pp gain over traditional RAG that single-pass retrieval cannot match.
 
-Why does traditional RAG plateau? It creates two failure modes: (1) the initial query may not retrieve the relevant passage, and (2) the model has no way to follow up when the first retrieval is insufficient. Agentic RAG eliminates both. We observed agents issuing 2-4 search queries per question, progressively refining their approach -- switching from "capital expenditure" to "purchases of PP&E" when the first query fails, or decomposing "fixed asset turnover" into separate searches for revenue and property values.
+Why does traditional RAG plateau? It has three fundamental limitations: (1) **single-pass retrieval** -- the initial query may not retrieve the relevant passage, and there's no second chance; (2) **no reasoning** -- the model cannot evaluate whether retrieved content actually answers the question; and (3) **no adaptability** -- there's no mechanism to refine the query or explore alternate sources. Agentic RAG addresses all three. We observed agents issuing 2-4 search queries per question, progressively refining their approach -- rewriting queries when initial terms fail (e.g., switching from "capital expenditure" to "purchases of PP&E"), decomposing complex questions into targeted sub-queries (e.g., searching for revenue and PP&E separately to compute fixed asset turnover), and validating retrieved content before committing to an answer.
 
 The key insight is that retrieval and reasoning are not sequential stages but an interleaved loop. The agent reads initial results, identifies gaps, formulates targeted follow-up queries, and synthesizes across multiple retrievals. This loop is especially valuable for financial questions that span multiple sections of a filing (e.g., computing ratios from figures on different pages).
 
-### Finding 2: Even in agentic systems, prompt engineering remains the biggest lever
+### Finding 2: Prompt engineering drives the largest gains
 
 The most striking result is the **super-additive interaction** between ReAct-style reasoning and search guidance. Each alone produces modest gains, but together they account for +24.7pp -- more than half the total improvement.
 
