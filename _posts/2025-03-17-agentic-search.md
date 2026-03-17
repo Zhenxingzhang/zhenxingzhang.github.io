@@ -7,7 +7,11 @@ author: Zhenxing Zhang
 
 ## Abstract
 
-Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But standard RAG treats retrieval as a one-shot, passive step -- the model gets one chance to fetch documents before generating an answer. For complex financial questions that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, this single-pass design falls short.
+Retrieval-augmented generation (RAG) has become the standard approach for grounding LLMs in external knowledge. But standard RAG treats retrieval as a one-shot, passive step -- the model gets one chance to fetch documents before generating an answer. For complex financial questions that require multi-step reasoning, precise numerical extraction, and domain-specific terminology, this single-pass design falls short. Agentic RAG replaces this linear pipeline (query, retrieve, augment, generate) with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
+
+<p align="center">
+  <img src="/assets/images/agentic_rag.jpeg" alt="Native RAG vs Agentic RAG" width="500">
+</p>
 
 In this work, we investigate **agentic RAG** -- a paradigm where the LLM actively controls its own retrieval process through iterative, tool-based interactions. We systematically experiment with different agent configurations -- varying prompts, agent architectures, retrieval models, and LLMs -- on FinanceBench, a benchmark of 150 expert-authored questions over real SEC filings, improving accuracy from **36.67% with a traditional single-pass RAG baseline to 80.00%**, a +43pp gain.
 
@@ -18,12 +22,6 @@ Our experiments reveal three key findings:
 3. **Stronger models amplify agentic gains** -- GPT-5 improves +12pp over GPT-4o with the same pipeline, achieving 80% accuracy through qualitatively better reasoning rather than brute-force search.
 
 All experiments were conducted using [OPAL](https://github.com/Zhenxingzhang/opal) (Open Platform for Agentic Learning), our open-source framework for building and evaluating LLM agents with multi-step reasoning and tool use.
-
-The diagram below illustrates the core difference between the two paradigms:
-
-![Native RAG vs Agentic RAG](/assets/images/agentic_rag.jpeg)
-
-Traditional (native) RAG follows a linear pipeline: query, retrieve, augment, generate. Agentic RAG replaces this with an iterative loop: the agent plans its search, observes the results, and repeats as needed before synthesizing a final answer.
 
 ## Experiments on FinanceBench
 
