@@ -1,6 +1,9 @@
-# Reasoning Structure Activates Search Strategy: A Decomposition of Agentic RAG Gains on Financial QA
-
-**Zhenxing Zhang**
+---
+layout: post
+title: "Reasoning Structure Activates Search Strategy: A Decomposition of Agentic RAG Gains on Knowledge-Intensive QA"
+date: 2026-03-20
+author: Zhenxing Zhang
+---
 
 ## Abstract
 
@@ -163,11 +166,11 @@ GPT-5's high ratio (5.00:1) looks concerning in isolation, but in context it ref
 
 **The activation hypothesis.** We propose that LLMs possess latent task strategies — domain-specific heuristics acquired during pretraining — that are inconsistently activated during generation. Structured reasoning prompts (ReAct) create explicit checkpoints where these strategies are more likely to be invoked. This explains why the interaction is super-additive: the reasoning structure doesn't just add its own benefit but *amplifies* the benefit of providing strategies to activate.
 
-**Limitations.** (1) Single benchmark: FinanceBench covers only financial document QA. The super-additive pattern may not hold for tasks where retrieval is less critical or reasoning is less structured. (2) Closed models: GPT-4o and GPT-5 are proprietary, limiting reproducibility and contamination analysis. (3) Sample size: 150 items is small for detecting interaction effects; we report point estimates without significance tests. (4) No comparison to published agentic RAG methods (Self-RAG, FLARE, IRCoT) — our baselines are internal. (5) The activation hypothesis is supported by qualitative evidence from trajectory analysis, not formal verification.
+**Limitations.** (1) Single benchmark: FinanceBench covers only knowledge-intensive QA. The super-additive pattern may not hold for tasks where retrieval is less critical or reasoning is less structured. (2) Closed models: GPT-4o and GPT-5 are proprietary, limiting reproducibility and contamination analysis. (3) Sample size: 150 items is small for detecting interaction effects; we report point estimates without significance tests. (4) No comparison to published agentic RAG methods (Self-RAG, FLARE, IRCoT) — our baselines are internal. (5) The activation hypothesis is supported by qualitative evidence from trajectory analysis, not formal verification.
 
 ## 8 Conclusion
 
-We present a factorial decomposition of agentic RAG gains on financial document QA, revealing that the dominant improvement factor is not retrieval quality but a super-additive interaction between reasoning structure and search guidance. This interaction yields +8.7pp beyond what either factor contributes independently, accounting for over half of the total +43pp improvement from single-pass RAG to the best configuration. Qualitative analysis identifies the mechanism: structured reasoning checkpoints *activate* search strategies that the model possesses but does not consistently apply. These findings reframe the agentic RAG improvement story from "iterative retrieval is better" to "structured reasoning unlocks latent task competence" — a distinction with concrete implications for system design.
+We present a factorial decomposition of agentic RAG gains on knowledge-intensive QA, revealing that the dominant improvement factor is not retrieval quality but a super-additive interaction between reasoning structure and search guidance. This interaction yields +8.7pp beyond what either factor contributes independently, accounting for over half of the total +43pp improvement from single-pass RAG to the best configuration. Qualitative analysis identifies the mechanism: structured reasoning checkpoints *activate* search strategies that the model possesses but does not consistently apply. These findings reframe the agentic RAG improvement story from "iterative retrieval is better" to "structured reasoning unlocks latent task competence" — a distinction with concrete implications for system design.
 
 ## References
 
